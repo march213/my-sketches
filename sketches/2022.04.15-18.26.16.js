@@ -25,7 +25,7 @@ const sketch = () => {
     return points;
   };
 
-  random.setSeed(120);
+  random.setSeed(3679);
   const points = createGrid().filter(() => random.value() > 0.5);
   const margin = 150;
 
