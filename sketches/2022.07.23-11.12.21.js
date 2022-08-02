@@ -15,13 +15,7 @@ const sketch = ({ width, height }) => {
   const angleDeg = -30;
 
   const rects = [];
-  const rectColors = [
-    random.pick(risoColors),
-    random.pick(risoColors),
-    random.pick(risoColors),
-    random.pick(risoColors),
-    random.pick(risoColors),
-  ];
+  const rectColors = [random.pick(risoColors), random.pick(risoColors)];
   const bgColor = random.pick(risoColors).hex;
 
   for (let i = 0; i < num; i++) {
@@ -42,9 +36,25 @@ const sketch = ({ width, height }) => {
     context.fillStyle = bgColor;
     context.fillRect(0, 0, width, height);
 
+    // black triangle
+    context.save();
+    context.translate(width * 0.5, height * 0.5);
+
+    context.beginPath();
+    context.moveTo(0, -300);
+    context.lineTo(300, 200);
+    context.lineTo(-300, 200);
+    context.closePath();
+
+    context.lineWidth = 10;
+    context.strokeStyle = 'black';
+    context.stroke();
+    context.clip();
+
     rects.forEach(({ x, y, w, h, fill, stroke, blend }) => {
       let shadowColor;
       context.save();
+      context.translate(width * -0.5, height * -0.5);
       context.translate(x, y);
       context.strokeStyle = stroke;
       context.fillStyle = fill;
@@ -72,6 +82,8 @@ const sketch = ({ width, height }) => {
 
       context.restore();
     });
+
+    context.restore();
   };
 };
 
