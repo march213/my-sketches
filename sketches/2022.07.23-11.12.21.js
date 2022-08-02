@@ -8,7 +8,7 @@ const seed = random.getRandomSeed();
 
 const settings = {
   dimensions: [1080, 1080],
-  animate: true,
+  // animate: true,
   name: seed,
 };
 
@@ -24,9 +24,9 @@ const sketch = ({ width, height }) => {
   const bgColor = random.pick(risoColors).hex;
   const mask = {
     radius: width * 0.4,
-    sides: 3,
+    sides: 6,
     x: width * 0.5,
-    h: height * 0.58,
+    h: height * 0.5,
   };
 
   for (let i = 0; i < num; i++) {
