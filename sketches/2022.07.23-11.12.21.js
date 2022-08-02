@@ -10,31 +10,39 @@ const settings = {
 };
 
 const sketch = ({ width, height }) => {
-  let x, y, w, h, fill, stroke;
-  const num = 20;
+  let x, y, w, h, fill, stroke, blend;
+  const num = 50;
   const angleDeg = -30;
 
   const rects = [];
-  const rectColors = [random.pick(risoColors), random.pick(risoColors), random.pick(risoColors)];
+  const rectColors = [
+    random.pick(risoColors),
+    random.pick(risoColors),
+    random.pick(risoColors),
+    random.pick(risoColors),
+    random.pick(risoColors),
+  ];
   const bgColor = random.pick(risoColors).hex;
 
   for (let i = 0; i < num; i++) {
     x = random.range(0, width);
     y = random.range(0, height);
-    w = random.range(200, 600);
+    w = random.range(600, width);
     h = random.range(40, 200);
 
     fill = random.pick(rectColors).hex;
     stroke = random.pick(rectColors).hex;
 
-    rects.push({ x, y, w, h, fill, stroke });
+    blend = random.value() > 0.5 ? 'overlay' : 'source-overlay';
+
+    rects.push({ x, y, w, h, fill, stroke, blend });
   }
 
   return ({ context, width, height }) => {
     context.fillStyle = bgColor;
     context.fillRect(0, 0, width, height);
 
-    rects.forEach(({ x, y, w, h, fill, stroke }) => {
+    rects.forEach(({ x, y, w, h, fill, stroke, blend }) => {
       let shadowColor;
       context.save();
       context.translate(x, y);
@@ -42,9 +50,11 @@ const sketch = ({ width, height }) => {
       context.fillStyle = fill;
       context.lineWidth = 10;
 
+      context.globalCompositeOperation = blend;
+
       drawSkewedRect({ context, w, h, degrees: angleDeg });
       shadowColor = Color.offsetHSL(fill, 0, 0, -20);
-      shadowColor.rgba[3] = 0.5;
+      shadowColor.rgba[3] = 0.7;
 
       context.shadowColor = Color.style(shadowColor.rgba);
       context.shadowOffsetX = -10;
@@ -52,6 +62,12 @@ const sketch = ({ width, height }) => {
       context.fill();
 
       context.shadowColor = null;
+      context.stroke();
+
+      context.globalCompositeOperation = 'source-overlay';
+
+      context.lineWidth = 2;
+      context.strokeStyle = 'black';
       context.stroke();
 
       context.restore();
