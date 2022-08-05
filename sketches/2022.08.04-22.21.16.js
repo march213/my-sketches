@@ -1,4 +1,5 @@
 const canvasSketch = require("canvas-sketch");
+const random = require("canvas-sketch-util/random");
 
 const settings = {
   dimensions: [1080, 1080],
@@ -23,11 +24,17 @@ const sketch = ({ width, height }) => {
 
   const points = [];
 
-  let x, y;
+  let x, y, n;
+  let frequency = 0.001;
+  let amplitude = 90;
 
   for (let i = 0; i < numCells; i++) {
     x = (i % cols) * cw;
     y = Math.floor(i / cols) * ch;
+
+    n = random.noise2D(x, y, frequency, amplitude);
+    x += n;
+    y += n;
 
     points.push(new Point({ x, y }));
   }
