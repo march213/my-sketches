@@ -1,14 +1,15 @@
 const canvasSketch = require("canvas-sketch");
 const random = require("canvas-sketch-util/random");
 const math = require("canvas-sketch-util/math");
+const colormap = require("colormap");
 
 const settings = {
   dimensions: [1080, 1080],
 };
 
 const sketch = ({ width, height }) => {
-  const cols = 24;
-  const rows = 12;
+  const cols = 32;
+  const rows = 20;
   const numCells = cols * rows;
 
   // grid
@@ -25,9 +26,14 @@ const sketch = ({ width, height }) => {
 
   const points = [];
 
-  let x, y, n, lineWidth;
+  let x, y, n, lineWidth, color;
   let frequency = 0.001;
   let amplitude = 120;
+
+  const colors = colormap({
+    colormap: "cool",
+    nshades: amplitude,
+  });
 
   for (let i = 0; i < numCells; i++) {
     x = (i % cols) * cw;
@@ -38,12 +44,14 @@ const sketch = ({ width, height }) => {
     y += n;
 
     lineWidth = math.mapRange(n, -amplitude, amplitude, 2, 20);
+    color =
+      colors[Math.floor(math.mapRange(n, -amplitude, amplitude, 0, amplitude))];
 
-    points.push(new Point({ x, y, lineWidth }));
+    points.push(new Point({ x, y, lineWidth, color }));
   }
 
   return ({ context, width, height }) => {
-    context.fillStyle = "white";
+    context.fillStyle = "black";
     context.fillRect(0, 0, width, height);
 
     context.save();
@@ -70,6 +78,7 @@ const sketch = ({ width, height }) => {
 
         context.beginPath();
         context.lineWidth = curr.lineWidth;
+        context.strokeStyle = curr.color;
         context.moveTo(lastX, lastY);
         context.quadraticCurveTo(curr.x, curr.y, mx, my);
 
@@ -84,10 +93,11 @@ const sketch = ({ width, height }) => {
 };
 
 class Point {
-  constructor({ x, y, lineWidth }) {
+  constructor({ x, y, lineWidth, color }) {
     this.x = x;
     this.y = y;
     this.lineWidth = lineWidth;
+    this.color = color;
   }
 
   draw(context) {
