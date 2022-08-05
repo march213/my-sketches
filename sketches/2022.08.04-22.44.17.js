@@ -4,7 +4,7 @@ const math = require("canvas-sketch-util/math");
 const colormap = require("colormap");
 
 const settings = {
-  dimensions: [1080, 1080],
+  dimensions: [2048, 2048],
 };
 
 const sketch = ({ width, height }) => {
@@ -69,7 +69,7 @@ const sketch = ({ width, height }) => {
         const next = points[r * cols + c + 1];
 
         const mx = curr.x + (next.x - curr.x) * 0.8;
-        const my = curr.y + (next.y - curr.y) * 5.5;
+        const my = curr.y + (next.y - curr.y) * 10;
 
         if (!c) {
           lastX = curr.x;
@@ -83,7 +83,7 @@ const sketch = ({ width, height }) => {
         context.quadraticCurveTo(curr.x, curr.y, mx, my);
 
         context.stroke();
-        lastX = mx + 250;
+        lastX = mx;
         lastY = my;
       }
     }
