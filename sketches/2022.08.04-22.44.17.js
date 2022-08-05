@@ -5,10 +5,11 @@ const colormap = require("colormap");
 
 const settings = {
   dimensions: [2048, 2048],
+  animate: true,
 };
 
 const sketch = ({ width, height }) => {
-  const cols = 72;
+  const cols = 80;
   const rows = 8;
   const numCells = cols * rows;
 
@@ -28,10 +29,10 @@ const sketch = ({ width, height }) => {
 
   let x, y, n, lineWidth, color;
   let frequency = 0.001;
-  let amplitude = 120;
+  let amplitude = 90;
 
   const colors = colormap({
-    colormap: "jet",
+    colormap: "electric",
     nshades: amplitude,
   });
 
@@ -40,8 +41,6 @@ const sketch = ({ width, height }) => {
     y = Math.floor(i / cols) * ch;
 
     n = random.noise2D(x, y, frequency, amplitude);
-    x += n;
-    y += n;
 
     lineWidth = math.mapRange(n, -amplitude, amplitude, 0, 5);
     color =
@@ -50,15 +49,20 @@ const sketch = ({ width, height }) => {
     points.push(new Point({ x, y, lineWidth, color }));
   }
 
-  return ({ context, width, height }) => {
+  return ({ context, width, height, frame }) => {
     context.fillStyle = "black";
     context.fillRect(0, 0, width, height);
 
     context.save();
     context.translate(mx, my);
     context.translate(cw * 0.5, ch * 0.5);
-    context.strokeStyle = "deeppink";
     context.lineWidth = 4;
+
+    points.forEach((point) => {
+      n = random.noise2D(point.ix + frame * 4, point.iy, frequency, amplitude);
+      point.x = point.ix + n;
+      point.y = point.iy + n;
+    });
 
     let lastX, lastY;
 
@@ -69,7 +73,7 @@ const sketch = ({ width, height }) => {
         const next = points[r * cols + c + 1];
 
         const mx = curr.x + (next.x - curr.x) * 0.8;
-        const my = curr.y + (next.y - curr.y) * 6;
+        const my = curr.y + (next.y - curr.y) * 12;
 
         if (!c) {
           lastX = curr.x;
@@ -98,6 +102,9 @@ class Point {
     this.y = y;
     this.lineWidth = lineWidth;
     this.color = color;
+
+    this.ix = x;
+    this.iy = y;
   }
 
   draw(context) {
