@@ -1,5 +1,6 @@
 const canvasSketch = require("canvas-sketch");
 const random = require("canvas-sketch-util/random");
+const math = require("canvas-sketch-util/math");
 
 const settings = {
   dimensions: [1080, 1080],
@@ -24,7 +25,7 @@ const sketch = ({ width, height }) => {
 
   const points = [];
 
-  let x, y, n;
+  let x, y, n, lineWidth;
   let frequency = 0.001;
   let amplitude = 120;
 
@@ -36,7 +37,9 @@ const sketch = ({ width, height }) => {
     x += n;
     y += n;
 
-    points.push(new Point({ x, y }));
+    lineWidth = math.mapRange(n, -amplitude, amplitude, 2, 20);
+
+    points.push(new Point({ x, y, lineWidth }));
   }
 
   return ({ context, width, height }) => {
@@ -49,10 +52,10 @@ const sketch = ({ width, height }) => {
     context.strokeStyle = "deeppink";
     context.lineWidth = 4;
 
+    let lastX, lastY;
+
     // draw lines
     for (let r = 0; r < rows; r++) {
-      context.beginPath();
-
       for (let c = 0; c < cols - 1; c++) {
         const curr = points[r * cols + c];
         const next = points[r * cols + c + 1];
@@ -60,16 +63,20 @@ const sketch = ({ width, height }) => {
         const mx = curr.x + (next.x - curr.x) * 0.5;
         const my = curr.y + (next.y - curr.y) * 0.5;
 
-        if (c === 0) {
-          context.moveTo(curr.x, curr.y);
-        } else if (c === cols - 2) {
-          context.quadraticCurveTo(curr.x, curr.y, next.x, next.y);
-        } else {
-          context.quadraticCurveTo(curr.x, curr.y, mx, my);
+        if (!c) {
+          lastX = curr.x;
+          lastY = curr.y;
         }
-      }
 
-      context.stroke();
+        context.beginPath();
+        context.lineWidth = curr.lineWidth;
+        context.moveTo(lastX, lastY);
+        context.quadraticCurveTo(curr.x, curr.y, mx, my);
+
+        context.stroke();
+        lastX = mx;
+        lastY = my;
+      }
     }
 
     context.restore();
@@ -77,9 +84,10 @@ const sketch = ({ width, height }) => {
 };
 
 class Point {
-  constructor({ x, y }) {
+  constructor({ x, y, lineWidth }) {
     this.x = x;
     this.y = y;
+    this.lineWidth = lineWidth;
   }
 
   draw(context) {
@@ -88,7 +96,7 @@ class Point {
     context.fillStyle = "black";
 
     context.beginPath();
-    context.arc(0, 0, 10, 0, Math.PI * 2);
+    context.arc(0, 0, 5, 0, Math.PI * 2);
     context.fill();
 
     context.restore();
