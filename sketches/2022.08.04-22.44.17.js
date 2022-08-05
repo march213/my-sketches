@@ -8,8 +8,8 @@ const settings = {
 };
 
 const sketch = ({ width, height }) => {
-  const cols = 32;
-  const rows = 20;
+  const cols = 12;
+  const rows = 48;
   const numCells = cols * rows;
 
   // grid
@@ -68,8 +68,8 @@ const sketch = ({ width, height }) => {
         const curr = points[r * cols + c];
         const next = points[r * cols + c + 1];
 
-        const mx = curr.x + (next.x - curr.x) * 0.5;
-        const my = curr.y + (next.y - curr.y) * 0.5;
+        const mx = curr.x + (next.x - curr.x) * 0.8;
+        const my = curr.y + (next.y - curr.y) * 5.5;
 
         if (!c) {
           lastX = curr.x;
@@ -83,7 +83,7 @@ const sketch = ({ width, height }) => {
         context.quadraticCurveTo(curr.x, curr.y, mx, my);
 
         context.stroke();
-        lastX = mx;
+        lastX = mx + 250;
         lastY = my;
       }
     }
