@@ -14,13 +14,14 @@ let manager;
 let minDB, maxDB;
 
 const sketch = () => {
-  const numCircles = 5;
+  const numCircles = 12;
   const numSlices = 1;
   const slice = (Math.PI * 2) / numSlices;
   const radius = 200;
 
   const bins = [];
   const lineWidths = [];
+  const rotationOffsets = [];
 
   let lineWidth, bin, mapped, phi;
 
@@ -31,8 +32,14 @@ const sketch = () => {
 
   for (let i = 0; i < numCircles; i++) {
     const t = i / (numCircles - 1);
-    lineWidth = eases.quadIn(t) * 200 + 20;
+    lineWidth = eases.quadIn(t) * 200 + 10;
     lineWidths.push(lineWidth);
+  }
+
+  for (let i = 0; i < numCircles; i++) {
+    rotationOffsets.push(
+      random.range(Math.PI * -0.25, Math.PI * 0.25) - Math.PI * 0.5
+    );
   }
 
   return ({ context, width, height }) => {
@@ -44,11 +51,15 @@ const sketch = () => {
 
     context.save();
     context.translate(width * 0.5, height * 0.5);
+    context.scale(1, -1);
 
     let cradius = radius;
 
     for (let i = 0; i < numCircles; i++) {
       context.save();
+      context.rotate(rotationOffsets[i]);
+
+      cradius += lineWidths[i] * 0.5 + 2;
 
       for (let j = 0; j < numSlices; j++) {
         context.rotate(slice);
@@ -61,11 +72,11 @@ const sketch = () => {
         phi = slice * mapped;
 
         context.beginPath();
-        context.arc(0, 0, cradius + context.lineWidth * 0.5, 0, phi);
+        context.arc(0, 0, cradius, 0, phi);
         context.stroke();
       }
 
-      cradius += lineWidths[i];
+      cradius += lineWidths[i] * 0.5;
 
       context.restore();
     }
