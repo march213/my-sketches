@@ -7,6 +7,7 @@ const settings = {
 
 let audio;
 let audioContext, audioData, sourceNode, analyserNode;
+let manager;
 
 const sketch = () => {
   return ({ context, width, height }) => {
@@ -34,8 +35,13 @@ const addListeners = () => {
   window.addEventListener("mouseup", () => {
     if (!audioContext) createAudio();
 
-    if (audio.paused) audio.play();
-    else audio.pause();
+    if (audio.paused) {
+      audio.play();
+      manager.play();
+    } else {
+      audio.pause();
+      manager.pause();
+    }
   });
 };
 
@@ -62,5 +68,10 @@ const getAverage = (data) => {
   return sum / data.length;
 };
 
-addListeners();
-canvasSketch(sketch, settings);
+const start = async () => {
+  addListeners();
+  manager = await canvasSketch(sketch, settings);
+  manager.pause();
+};
+
+start();
