@@ -16,6 +16,17 @@ const sketch = () => {
     if (!audioContext) return;
 
     analyserNode.getFloatFrequencyData(audioData);
+    const avg = getAverage(audioData);
+
+    context.save();
+    context.translate(width * 0.5, height * 0.5);
+    context.lineWidth = 10;
+
+    context.beginPath();
+    context.arc(0, 0, Math.abs(avg), 0, Math.PI * 2);
+    context.stroke();
+
+    context.restore();
   };
 };
 
@@ -41,6 +52,14 @@ const createAudio = () => {
   sourceNode.connect(analyserNode);
 
   audioData = new Float32Array(analyserNode.frequencyBinCount);
+};
+
+const getAverage = (data) => {
+  let sum = 0;
+  for (let i = 0; i < data.length; i++) {
+    sum += data[i];
+  }
+  return sum / data.length;
 };
 
 addListeners();
